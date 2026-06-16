@@ -40,7 +40,7 @@ const PIANI = [
   {
     id:"elite", badge:"👑 ELITE", colore:"#ff2d2d", nome:"ELITE", featured:false,
     tagline:"Per chi non accetta compromessi. Il massimo dall'allenamento online.",
-    prezzo:129, prezzoA:103, ctaTesto:"VOGLIO IL MASSIMO", ctaBg:"#ff2d2d", ctaCol:"#fff",
+    prezzo:149, prezzoA:119, ctaTesto:"VOGLIO IL MASSIMO", ctaBg:"#ff2d2d", ctaCol:"#fff",
     features:[
       {ok:true, t:"Tutto il piano Pro, più:"},
       {ok:true, t:"Videocall 1:1 mensile (60 min)"},
@@ -65,10 +65,10 @@ const ONETO = [
   },
   {
     id:"p2", emoji:"🏆", nome:"PERSONAL PREMIUM", featured:true,
-    sessioni:"2 SESSIONI / SETTIMANA", prezzo:199,
+    sessioni:"2 SESSIONI / SETTIMANA", prezzo:249,
     postiTotali:4, postiOccupati:2,
     tagline:"Due sessioni a settimana in palestra. Il massimo della crescita nel minor tempo.",
-    include:["2 sessioni in palestra a settimana con Mattia","Scheda personalizzata aggiornata ogni settimana","Chat prioritaria — risposta entro 6h","Videocall mensile di analisi (60 min)","Piano alimentare con nutrizionista incluso","Analisi video della tua tecnica"],
+    include:["2 sessioni in palestra a settimana con Mattia","Scheda personalizzata aggiornata ogni settimana","Chat prioritaria — risposta entro 6h","Videocall mensile di analisi (60 min)","Linee guida nutrizionali personalizzate","Analisi video della tua tecnica"],
     ideale:"Per chi vuole risultati seri nel minor tempo con la massima attenzione.",
   },
 ];
@@ -1055,7 +1055,7 @@ export default function App() {
             <div style={{overflowX:"auto"}}>
               <table className="ctbl">
                 <thead>
-                  <tr><th>Funzionalità</th><th>BASE €39</th><th className="hl">PRO €79 ⭐</th><th>ELITE €129</th></tr>
+                  <tr><th>Funzionalità</th><th>BASE €39</th><th className="hl">PRO €79 ⭐</th><th>ELITE €149</th></tr>
                 </thead>
                 <tbody>
                   {[["Accesso catalogo schede","✓","✓","✓"],["Video esplicativi","✓","✓","✓"],["Tracker carichi","✓","✓","✓"],["Scheda personalizzata","✕","✓","✓"],["Aggiornamento scheda","4 sett","2 sett","1 sett"],["Chat con Mattia","✕","24h","6h"],["Report progressi","✕","✓","✓"],["Videocall 1:1","✕","✕","✓"],["Linee guida nutrizionali","✕","✕","✓"],["Posti disponibili","illimitati","illimitati","max 10"]].map(([f,s,pr,e],i)=>(
@@ -1160,28 +1160,16 @@ export default function App() {
               <div className="abbio">Lo sport mi ha insegnato che il limite esiste solo nella testa. Ho iniziato ad allenarmi a quattordici anni sul campo da rugby, dove ho imparato a unire la forza bruta della palestra alla resistenza della corsa.<br/><br/>Oggi, dopo anni di gare, comprese le mezze maratone, metto questa competenza a tua disposizione. Attraverso la mia piattaforma, trasformo la teoria più avanzata, studiata con Project Invictus, in un percorso di allenamento ibrido cucito su misura per te.<br/><br/>Smetti di allenarti a caso.</div>
             </div>
             <div className="abc">
-              <div className="slbl" style={{marginBottom:16}}>Certificazione</div>
-
-              {/* DIPLOMA CARD */}
-              <div style={{background:"#080808",border:"1px solid #1c1c1c",borderTop:"3px solid #e8ff3a",padding:"20px",marginBottom:12}}>
-                <div style={{display:"flex",alignItems:"center",gap:14,marginBottom:16}}>
-                  <div style={{width:48,height:48,borderRadius:6,background:"rgba(232,255,58,.1)",border:"1px solid rgba(232,255,58,.2)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:24,flexShrink:0}}>🎓</div>
-                  <div>
-                    <div style={{fontFamily:"'Barlow Condensed',sans-serif",fontWeight:900,fontSize:18,letterSpacing:1,marginBottom:2}}>Personal Trainer Certificato</div>
-                    <div style={{fontFamily:"'Space Mono',monospace",fontSize:10,color:"#e8ff3a",letterSpacing:2}}>PROJECT INVICTUS</div>
-                    <div style={{fontFamily:"'Space Mono',monospace",fontSize:9,color:"#555",marginTop:3}}>N° VT-141278-67448</div>
-                  </div>
-                </div>
-
-                {/* DIPLOMA PLACEHOLDER */}
-                <div style={{border:"1px solid rgba(232,255,58,.2)",borderRadius:3,background:"rgba(232,255,58,.03)",padding:"24px",textAlign:"center"}}>
-                  <div style={{fontSize:40,marginBottom:12}}>📜</div>
-                  <div style={{fontFamily:"'Barlow Condensed',sans-serif",fontWeight:900,fontSize:20,letterSpacing:2,marginBottom:6}}>DIPLOMA UFFICIALE</div>
-                  <div style={{fontFamily:"'Space Mono',monospace",fontSize:9,color:"#e8ff3a",letterSpacing:2,marginBottom:4}}>PROJECT INVICTUS</div>
-                  <div style={{fontFamily:"'Space Mono',monospace",fontSize:9,color:"#555",letterSpacing:1}}>N° VT-141278-67448</div>
-                </div>
-
-              <button className="by" onClick={()=>vai("oneto")}>ALLENATI CON ME →</button>
+              <div className="slbl" style={{marginBottom:16}}>Certificazioni</div>
+              <div className="clst2">
+                {[["🎓","Personal Trainer Certificato","Project Invictus — Diploma Personal Trainer"]].map(([ico,n,s],i)=>(
+                  <div className="cert" key={i}><div className="cico">{ico}</div><div><div className="cn">{n}</div><div className="cs">{s}</div></div></div>
+                ))}
+              </div>
+            </div>
+          </div>
+          <div style={{display:"flex",gap:12,flexWrap:"wrap"}}>
+            <button className="by" onClick={()=>vai("oneto")}>ALLENATI CON ME →</button>
             <button className="bo" onClick={()=>vai("piani")}>VEDI I PIANI ONLINE</button>
           </div>
         </div>
