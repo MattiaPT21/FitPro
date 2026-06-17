@@ -187,77 +187,12 @@ const ARTICOLI = [
 ];
 
 
-const SCHEDE_CLIENTI_DB = [
-  {
-    clienteId: 1,
-    settimana: "Settimana 7 / 12",
-    obiettivo: "Massa muscolare — fase di accumulo",
-    note_coach: "Questa settimana spingi sulla panca. Se arrivi a 6 reps con buona forma, scala il peso.",
-    giorni: [
-      { g:"LUN", tipo:"allenamento", titolo:"Upper Body A — Spinta", esercizi:[
-        { id:"bp",  serie:4, reps:"6-8",  peso:"80kg",  note:"RPE 8 — pausa 2 min tra le serie" },
-        { id:"ohp", serie:3, reps:"8-10", peso:"50kg",  note:"Gomiti davanti alla barra" },
-        { id:"dip", serie:3, reps:"10",   peso:"BW",    note:"Aggiunta zavorra se riesci" },
-      ]},
-      { g:"MAR", tipo:"riposo", titolo:"Riposo attivo", esercizi:[] },
-      { g:"MER", tipo:"allenamento", titolo:"Lower Body A — Squat Focus", esercizi:[
-        { id:"sq",  serie:4, reps:"6",    peso:"115kg", note:"RPE 9 — forma prima del carico" },
-        { id:"rdl", serie:3, reps:"10",   peso:"80kg",  note:"Senti lo stretch nei femorali" },
-      ]},
-      { g:"GIO", tipo:"riposo", titolo:"Riposo", esercizi:[] },
-      { g:"VEN", tipo:"allenamento", titolo:"Upper Body B — Tiraggio", esercizi:[
-        { id:"ch",  serie:4, reps:"6-8",  peso:"BW+5kg", note:"Scendi lento — 3 secondi" },
-        { id:"row", serie:4, reps:"8",    peso:"70kg",   note:"Tira verso l'addome" },
-      ]},
-      { g:"SAB", tipo:"allenamento", titolo:"Lower Body B — Stacco Focus", esercizi:[
-        { id:"dl",  serie:4, reps:"5",    peso:"140kg", note:"Il tuo main lift — massima concentrazione" },
-        { id:"rdl", serie:3, reps:"10",   peso:"70kg",  note:"Finisher femorali" },
-      ]},
-      { g:"DOM", tipo:"riposo", titolo:"Riposo completo", esercizi:[] },
-    ]
-  },
-];
+const SCHEDE_CLIENTI_DB = [];
 
 
-const CLIENTI_DB = [
-  {id:1,nome:"Marco Rossi",   av:"MR",col:"#ff2d2d",piano:"Personal Premium",nonLetti:true, msgs:[{da:"client",t:"Squat 120kg x5 fatto 🔥",ora:"09:14"},{da:"coach",t:"BESTIA! Come ti sei sentito?",ora:"09:46"},{da:"client",t:"Gambe a pezzi ma ci ho creduto 💀",ora:"09:47"},{da:"client",t:"Posso spingere di più mercoledì?",ora:"09:48"}]},
-  {id:2,nome:"Laura Bianchi", av:"LB",col:"#39ff14",piano:"Personal 1:1",  nonLetti:false,msgs:[{da:"client",t:"Sessione top! Più sicura sulla tecnica 🎉",ora:"Ieri"},{da:"coach",t:"Si vede tantissimo! Ci vediamo lunedì.",ora:"Ieri"}]},
-  {id:3,nome:"Giovanni Neri", av:"GN",col:"#a78bfa",piano:"Elite",         nonLetti:true, msgs:[{da:"client",t:"Quando aggiorniamo la scheda?",ora:"Ieri"},{da:"client",t:"Ho quasi finito la progressione sullo stacco",ora:"10:02"}]},
-  {id:4,nome:"Sofia Esposito",av:"SE",col:"#38bdf8",piano:"Pro",           nonLetti:false,msgs:[{da:"coach",t:"Sofia come procede la nuova scheda?",ora:"Lun"},{da:"client",t:"Sto vedendo già i miglioramenti! 💪",ora:"Lun"}]},
-];
+const CLIENTI_DB = [];
 
-const RISPOSTE_DB = [
-  {
-    id:1, clienteId:1, nome:"Marco Rossi", data:"20 Mag 2026", stato:"nuovo",
-    dati:{
-      eta:"28", sesso:"Maschio", altezza:"182", peso:"82", email:"marco@email.it", telefono:"3331234567",
-      obiettivi:["Aumentare la massa muscolare","Migliorare la resistenza"],
-      sessioni:"4-5 volte", livello:"Intermedio (1-2 anni di esperienza)",
-      attivita:"Sì, occasionalmente", haAvutoPT:"No",
-      problemi:["Nessun problema"], farmaci:"No", medico:"No", allergie:"No",
-      alimentazione:"Da migliorare", sonno:"6-7 ore", nutrizionista:"No",
-      stress:"Medio", fuma:"No", sigarette:[],
-      tipoAllenamento:["Allenamento con i pesi","HIIT"],
-      orario:["Alla sera"], luogo:["In palestra"],
-      note:"Voglio migliorare soprattutto la parte superiore del corpo."
-    }
-  },
-  {
-    id:2, clienteId:3, nome:"Giovanni Neri", data:"22 Mag 2026", stato:"letto",
-    dati:{
-      eta:"35", sesso:"Maschio", altezza:"178", peso:"90", email:"giovanni@email.it", telefono:"3449876543",
-      obiettivi:["Perdere peso","Tonificare il corpo"],
-      sessioni:"3-4 volte", livello:"Avanzato (più di 3 anni di esperienza)",
-      attivita:"Sì, regolarmente", haAvutoPT:"Sì",
-      problemi:["Mal di schiena"], farmaci:"No", medico:"Sì", allergie:"No",
-      alimentazione:"Abbastanza sana", sonno:"7-8 ore", nutrizionista:"No",
-      stress:"Alto", fuma:"No", sigarette:[],
-      tipoAllenamento:["Allenamento con i pesi","Cardio (corsa, bici, ecc.)"],
-      orario:["Al mattino","Sono flessibile"], luogo:["In palestra"],
-      note:"Ho un problema alla schiena bassa, meglio evitare stacchi pesanti per ora."
-    }
-  },
-];
+const RISPOSTE_DB = [];
 
 const TRACKER_DB = [
   {id:"sq", nome:"Squat",         ico:"🏋️",storico:[100,105,107,110,112,115],nota:"Ottimo! Tieni questo peso 2 sessioni prima di salire.",ob:140},
@@ -714,14 +649,14 @@ export default function App() {
   const [toast,     setToast]     = useState("");
   const [notif,     setNotif]     = useState(null);
   const [clienti,   setClienti]   = useState(CLIENTI_DB);
-  const [attivo,    setAttivo]    = useState(CLIENTI_DB[0]);
+  const [attivo,    setAttivo]    = useState(null);
   const [chatT,     setChatT]     = useState("");
   const [sezione,   setSezione]   = useState("progressi");
   const [trackerV,  setTrackerV]  = useState("cliente");
   const [carichi,   setCarichi]   = useState(() => Object.fromEntries(TRACKER_DB.map(e => [e.id, String(e.storico[e.storico.length-1])])));
   const [validati,  setValidati]  = useState(new Set());
   const [commenti,  setCommenti]  = useState({});
-  const [checked,   setChecked]   = useState(new Set([0,1,2]));
+  const [checked,   setChecked]   = useState(new Set());
   const [openDay,   setOpenDay]   = useState(null);
   const [qForm,     setQForm]     = useState({
     nome:"", eta:"", sesso:"", altezza:"", peso:"", email:"", telefono:"",
@@ -747,10 +682,7 @@ export default function App() {
   const endRef = useRef(null);
 
   useEffect(() => { endRef.current?.scrollIntoView({behavior:"smooth"}); }, [attivo, clienti]);
-  useEffect(() => {
-    const t = setTimeout(() => setNotif({nome:"Marco Rossi",msg:"Ci vediamo mercoledì in palestra? 💪"}), 5000);
-    return () => clearTimeout(t);
-  }, []);
+
 
   // Carica credenziali salvate
   useEffect(() => {
@@ -807,8 +739,8 @@ export default function App() {
     vai("home");
   };
 
-  const BOOKED = [3,8,15,22];
-  const BSLOTS = {"1":["09:00","14:00"],"7":["10:00","15:00"]};
+  const BOOKED = [2,3,9,10,16,17,23,24,30,31];
+  const BSLOTS = {};
   const SLIST  = ["09:00","10:00","11:00","14:00","15:00","16:00","17:00","18:00"];
   const fd = (new Date(2026,4,1).getDay()+6)%7;
 
@@ -856,7 +788,7 @@ export default function App() {
                 <span style={{fontSize:12,color:"#555",userSelect:"none"}}>Ricorda le mie credenziali</span>
               </div>
               <button className="by" onClick={doLogin}>ACCEDI →</button>
-              <div className="lhint">Demo coach: mattia@fitpro.it / coach123<br/>Demo cliente: marco@email.it / client123</div>
+
             </div>
           </div>
         </div>
@@ -990,13 +922,6 @@ export default function App() {
             </p>
           </div>
 
-          <div className="togw">
-            <span className={`togl ${!annuale?"on":""}`}>MENSILE</span>
-            <div className={`tog ${annuale?"on":""}`} onClick={()=>setAnnuale(p=>!p)}><div className="togth"/></div>
-            <span className={`togl ${annuale?"on":""}`}>ANNUALE</span>
-            <span className="sbadge">RISPARMI 20%</span>
-          </div>
-
           {/* COME FUNZIONA DOPO CHE PAGHI */}
           <div style={{maxWidth:1080,margin:"0 auto 48px",padding:"0 24px"}}>
             <div style={{textAlign:"center",marginBottom:28}}>
@@ -1021,6 +946,13 @@ export default function App() {
                 </div>
               ))}
             </div>
+          </div>
+
+          <div className="togw">
+            <span className={`togl ${!annuale?"on":""}`}>MENSILE</span>
+            <div className={`tog ${annuale?"on":""}`} onClick={()=>setAnnuale(p=>!p)}><div className="togth"/></div>
+            <span className={`togl ${annuale?"on":""}`}>ANNUALE</span>
+            <span className="sbadge">RISPARMI 20%</span>
           </div>
 
           <div style={{maxWidth:1080,margin:"0 auto",padding:"0 24px"}}>
@@ -1245,6 +1177,7 @@ export default function App() {
           <div className="cw">
             <div className="clst">
               <div className="clsth">CLIENTI ({clienti.length})</div>
+              {clienti.length===0 && <div style={{padding:"20px",color:"#555",fontSize:12,fontFamily:"'Space Mono',monospace",textAlign:"center"}}>Nessun cliente ancora</div>}
               {clienti.map(c=>(
                 <div key={c.id} className={`cli ${attivo.id===c.id?"on":""}`} onClick={()=>{ setAttivo(c); setClienti(p=>p.map(cl=>cl.id===c.id?{...cl,nonLetti:false}:cl)); }}>
                   <div className="clav" style={{background:c.col+"18",color:c.col}}>{c.av}</div>
