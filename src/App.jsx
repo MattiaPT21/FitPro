@@ -40,7 +40,7 @@ const PIANI = [
   {
     id:"elite", badge:"👑 ELITE", colore:"#ff2d2d", nome:"ELITE", featured:false,
     tagline:"Per chi non accetta compromessi. Il massimo dall'allenamento online.",
-    prezzo:149, prezzoA:119, ctaTesto:"VOGLIO IL MASSIMO", ctaBg:"#ff2d2d", ctaCol:"#fff",
+    prezzo:119, prezzoA:95, ctaTesto:"VOGLIO IL MASSIMO", ctaBg:"#ff2d2d", ctaCol:"#fff",
     features:[
       {ok:true, t:"Tutto il piano Pro, più:"},
       {ok:true, t:"Videocall 1:1 mensile (60 min)"},
@@ -65,7 +65,7 @@ const ONETO = [
   },
   {
     id:"p2", emoji:"🏆", nome:"PERSONAL PREMIUM", featured:true,
-    sessioni:"2 SESSIONI / SETTIMANA", prezzo:249,
+    sessioni:"2 SESSIONI / SETTIMANA", prezzo:199,
     postiTotali:4, postiOccupati:2,
     tagline:"Due sessioni a settimana in palestra. Il massimo della crescita nel minor tempo.",
     include:["2 sessioni in palestra a settimana con Mattia","Scheda personalizzata aggiornata ogni settimana","Chat prioritaria — risposta entro 6h","Videocall mensile di analisi (60 min)","Linee guida nutrizionali personalizzate","Analisi video della tua tecnica"],
@@ -987,7 +987,7 @@ export default function App() {
             <div style={{overflowX:"auto"}}>
               <table className="ctbl">
                 <thead>
-                  <tr><th>Funzionalità</th><th>BASE €39</th><th className="hl">PRO €79 ⭐</th><th>ELITE €149</th></tr>
+                  <tr><th>Funzionalità</th><th>BASE €39</th><th className="hl">PRO €79 ⭐</th><th>ELITE €119</th></tr>
                 </thead>
                 <tbody>
                   {[["Accesso catalogo schede","✓","✓","✓"],["Video esplicativi","✓","✓","✓"],["Tracker carichi","✓","✓","✓"],["Scheda personalizzata","✕","✓","✓"],["Aggiornamento scheda","4 sett","2 sett","1 sett"],["Chat con Mattia","✕","24h","6h"],["Report progressi","✕","✓","✓"],["Videocall 1:1","✕","✕","✓"],["Linee guida nutrizionali","✕","✕","✓"],["Posti disponibili","illimitati","illimitati","max 10"]].map(([f,s,pr,e],i)=>(
