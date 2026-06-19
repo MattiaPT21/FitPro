@@ -2,6 +2,41 @@
 import { useState, useRef, useEffect } from "react";
 
 // ═══════════════════════════════════════════════
+//  SUPABASE CONFIG
+// ═══════════════════════════════════════════════
+
+const SUPABASE_URL = "https://evjnocmvnrelkidokbsy.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV2am5vY212bnJlbGtpZG9rYnN5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4NjAwNzgsImV4cCI6MjA5NzQzNjA3OH0.Jcm3l0tejse3Yox3RrFttIayUTZFGpUHiQKDPx-Btg8";
+const COACH_EMAIL = "info@fitpro-oh-mattia.it";
+
+const supabase = {
+  auth: {
+    signIn: async (email, password) => {
+      const r = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
+        method: "POST",
+        headers: {"Content-Type":"application/json","apikey":SUPABASE_KEY},
+        body: JSON.stringify({email, password})
+      });
+      return r.json();
+    },
+    signUp: async (email, password) => {
+      const r = await fetch(`${SUPABASE_URL}/auth/v1/signup`, {
+        method: "POST",
+        headers: {"Content-Type":"application/json","apikey":SUPABASE_KEY},
+        body: JSON.stringify({email, password})
+      });
+      return r.json();
+    },
+    signOut: async (token) => {
+      await fetch(`${SUPABASE_URL}/auth/v1/logout`, {
+        method: "POST",
+        headers: {"apikey":SUPABASE_KEY,"Authorization":`Bearer ${token}`}
+      });
+    },
+  }
+};
+
+// ═══════════════════════════════════════════════
 //  DATI
 // ═══════════════════════════════════════════════
 
@@ -645,6 +680,7 @@ export default function App() {
   const [lEmail,    setLEmail]    = useState("");
   const [lPass,     setLPass]     = useState("");
   const [lErr,      setLErr]      = useState("");
+  const [token,     setToken]     = useState(null);
   const [ricordami, setRicordami] = useState(false);
   const [toast,     setToast]     = useState("");
   const [notif,     setNotif]     = useState(null);
@@ -719,22 +755,26 @@ export default function App() {
     setChatT("");
   };
 
-  const doLogin = () => {
-    if (!lRuolo) { setLErr("Seleziona il tipo di accesso"); return; }
+  const doLogin = async () => {
     if (!lEmail||!lPass) { setLErr("Inserisci email e password"); return; }
-    if (lRuolo==="coach" && lEmail==="mattia@fitpro.it" && lPass==="coach123") {
-      setLoggedIn(true); setRuolo("coach"); setShowLogin(false); vai("chat"); setLErr("");
-        if(ricordami) { try { localStorage.setItem("fitpro_creds", JSON.stringify({email:lEmail,pass:lPass,ruolo:"coach"})); } catch(e){} }
-        else { try { localStorage.removeItem("fitpro_creds"); } catch(e){} }
-    } else if (lRuolo==="client" && lEmail==="marco@email.it" && lPass==="client123") {
-      setLoggedIn(true); setRuolo("client"); setShowLogin(false); vai("portal"); setLErr("");
-        if(ricordami) { try { localStorage.setItem("fitpro_creds", JSON.stringify({email:lEmail,pass:lPass,ruolo:"client"})); } catch(e){} }
-        else { try { localStorage.removeItem("fitpro_creds"); } catch(e){} }
-    } else { setLErr("Credenziali non corrette"); }
+    setLErr("Accesso in corso...");
+    const data = await supabase.auth.signIn(lEmail, lPass);
+    if (data.error || !data.access_token) {
+      setLErr("Email o password non corretti"); return;
+    }
+    setToken(data.access_token);
+    const isCoach = lEmail.toLowerCase() === COACH_EMAIL.toLowerCase();
+    const r = isCoach ? "coach" : "client";
+    setLoggedIn(true); setRuolo(r); setShowLogin(false);
+    setLErr("");
+    if(ricordami) { try { localStorage.setItem("fitpro_creds", JSON.stringify({email:lEmail,pass:lPass,ruolo:r})); } catch(e){} }
+    else { try { localStorage.removeItem("fitpro_creds"); } catch(e){} }
+    vai(isCoach ? "chat" : "portal");
   };
 
-  const doLogout = () => {
-    setLoggedIn(false); setRuolo(null); setLEmail(""); setLPass(""); setLRuolo(null);
+  const doLogout = async () => {
+    if(token) await supabase.auth.signOut(token);
+    setLoggedIn(false); setRuolo(null); setLEmail(""); setLPass(""); setLRuolo(null); setToken(null);
     if(!ricordami) { try { localStorage.removeItem("fitpro_creds"); } catch(e){} }
     vai("home");
   };
@@ -772,14 +812,8 @@ export default function App() {
             <div className="ltop">
               <div className="llogo">FIT<span>PRO</span></div>
               <div className="lsub">Accesso area riservata</div>
-              <div className="lrol">
-                {[["coach","🏋️","SONO IL COACH"],["client","👤","SONO UN CLIENTE"]].map(([r,ico,lbl])=>(
-                  <div key={r} className={`lrole ${lRuolo===r?"on":""}`} onClick={()=>setLRuolo(r)}>
-                    <div className="lrico">{ico}</div>
-                    <div className="lrlbl">{lbl}</div>
-                  </div>
-                ))}
-              </div>
+              <div style={{fontSize:11,color:"#555",marginTop:8,textAlign:"center"}}>Usa le credenziali che ti ha inviato Mattia</div>
+
             </div>
             <div className="lbody">
               <input className="linput" placeholder="Email" type="email" value={lEmail} onChange={e=>setLEmail(e.target.value)}/>
@@ -1009,7 +1043,7 @@ export default function App() {
             <div style={{maxWidth:600,margin:"0 auto",padding:"16px 20px",border:"1px solid #1c1c1c",borderTop:"none",background:"#080808"}}>
               <div style={{fontFamily:"'Space Mono',monospace",fontSize:9,color:"#333",letterSpacing:2,textTransform:"uppercase",marginBottom:10}}>Condizioni di rimborso</div>
               <div style={{fontSize:11,color:"#2a2a2a",lineHeight:1.9}}>
-                La garanzia di rimborso è valida esclusivamente entro 14 giorni dalla data del primo pagamento, a condizione che il cliente non abbia ancora ricevuto la scheda di allenamento personalizzata. Una volta consegnata la scheda, il rimborso non è applicabile in quanto il servizio principale è stato erogato. La garanzia si applica ai soli piani online (Base, Pro, Elite) e non alle sessioni di Personal Training in palestra, che per loro natura non sono rimborsabili una volta svolte. Per richiedere il rimborso contattare: <span style={{color:"#444"}}>mattia@fitpro.it</span> — il rimborso verrà processato entro 5 giorni lavorativi.
+                La garanzia di rimborso è valida esclusivamente entro 14 giorni dalla data del primo pagamento, a condizione che il cliente non abbia ancora ricevuto la scheda di allenamento personalizzata. Una volta consegnata la scheda, il rimborso non è applicabile in quanto il servizio principale è stato erogato. La garanzia si applica ai soli piani online (Base, Pro, Elite) e non alle sessioni di Personal Training in palestra, che per loro natura non sono rimborsabili una volta svolte. Per richiedere il rimborso contattare: <span style={{color:"#444"}}>info@fitpro-oh-mattia.it</span> — il rimborso verrà processato entro 5 giorni lavorativi.
               </div>
             </div>
           </div>
@@ -2070,10 +2104,10 @@ export default function App() {
               <div style={{fontSize:12,color:"#555",lineHeight:2}}>
                 <div>📍 Rieti — XtremeGym</div>
                 <div>
-                  <a href="mailto:mattia@fitpro.it" style={{color:"#555",textDecoration:"none",transition:"color .15s"}}
+                  <a href="mailto:info@fitpro-oh-mattia.it" style={{color:"#555",textDecoration:"none",transition:"color .15s"}}
                     onMouseEnter={e=>e.currentTarget.style.color="#e8ff3a"}
                     onMouseLeave={e=>e.currentTarget.style.color="#555"}
-                  >✉️ mattia@fitpro.it</a>
+                  >✉️ info@fitpro-oh-mattia.it</a>
                 </div>
                 <div>
                   <a href="https://instagram.com/oh_mattia" target="_blank" rel="noopener noreferrer" style={{color:"#555",textDecoration:"none",transition:"color .15s"}}
