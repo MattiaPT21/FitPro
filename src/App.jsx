@@ -9,31 +9,6 @@ const SUPABASE_URL = "https://evjnocmvnrelkidokbsy.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV2am5vY212bnJlbGtpZG9rYnN5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4NjAwNzgsImV4cCI6MjA5NzQzNjA3OH0.Jcm3l0tejse3Yox3RrFttIayUTZFGpUHiQKDPx-Btg8";
 const COACH_EMAIL = "info@fitpro-oh-mattia.it";
 
-const supabase = {
-  auth: {
-    signIn: (email, password) => {
-      return fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
-        method: "POST",
-        headers: {"Content-Type":"application/json","apikey":SUPABASE_KEY,"Authorization":`Bearer ${SUPABASE_KEY}`},
-        body: JSON.stringify({email, password})
-      }).then(r => r.json()).catch(() => ({error:{message:"Connessione fallita"}}));
-    },
-    signUp: (email, password) => {
-      return fetch(`${SUPABASE_URL}/auth/v1/signup`, {
-        method: "POST",
-        headers: {"Content-Type":"application/json","apikey":SUPABASE_KEY,"Authorization":`Bearer ${SUPABASE_KEY}`},
-        body: JSON.stringify({email, password})
-      }).then(r => r.json()).catch(() => ({error:{message:"Connessione fallita"}}));
-    },
-    signOut: (token) => {
-      return fetch(`${SUPABASE_URL}/auth/v1/logout`, {
-        method: "POST",
-        headers: {"apikey":SUPABASE_KEY,"Authorization":`Bearer ${token}`}
-      }).catch(()=>{});
-    },
-  }
-};
-
 // ═══════════════════════════════════════════════
 //  DATI
 // ═══════════════════════════════════════════════
@@ -756,26 +731,29 @@ export default function App() {
   const doLogin = () => {
     if (!lEmail||!lPass) { setLErr("Inserisci email e password"); return; }
     setLLoading(true); setLErr("");
-    supabase.auth.signIn(lEmail, lPass)
-      .then(data => {
+    import("https://esm.sh/@supabase/supabase-js@2").then(({ createClient }) => {
+      const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+      sb.auth.signInWithPassword({ email: lEmail, password: lPass }).then(({ data, error }) => {
         setLLoading(false);
-        if (data.error || !data.access_token) {
-          setLErr(data.error?.message==="Email not confirmed"?"Controlla la tua email e conferma l'account":"Email o password non corretti"); return;
+        if (error || !data?.session) {
+          setLErr("Email o password non corretti"); return;
         }
-        setToken(data.access_token);
+        setToken(data.session.access_token);
         const isCoach = lEmail.toLowerCase() === COACH_EMAIL.toLowerCase();
         const r = isCoach ? "coach" : "client";
-        setLoggedIn(true); setRuolo(r); setShowLogin(false);
-        setLErr("");
+        setLoggedIn(true); setRuolo(r); setShowLogin(false); setLErr("");
         if(ricordami) { try { localStorage.setItem("fitpro_creds", JSON.stringify({email:lEmail,pass:lPass,ruolo:r})); } catch(e){} }
         else { try { localStorage.removeItem("fitpro_creds"); } catch(e){} }
         vai(isCoach ? "chat" : "portal");
-      })
-      .catch(() => { setLLoading(false); setLErr("Errore di connessione — riprova"); });
+      });
+    }).catch(() => { setLLoading(false); setLErr("Errore di connessione — riprova"); });
   };
 
   const doLogout = () => {
-    if(token) supabase.auth.signOut(token).catch(()=>{});
+    import("https://esm.sh/@supabase/supabase-js@2").then(({ createClient }) => {
+      const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+      sb.auth.signOut().catch(()=>{});
+    }).catch(()=>{});
     setLoggedIn(false); setRuolo(null); setLEmail(""); setLPass(""); setLRuolo(null); setToken(null);
     if(!ricordami) { try { localStorage.removeItem("fitpro_creds"); } catch(e){} }
     vai("home");
