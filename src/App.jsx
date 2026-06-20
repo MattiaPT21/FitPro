@@ -11,27 +11,25 @@ const COACH_EMAIL = "info@fitpro-oh-mattia.it";
 
 const supabase = {
   auth: {
-    signIn: async (email, password) => {
-      const r = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
+    signIn: (email, password) => {
+      return fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
         method: "POST",
-        headers: {"Content-Type":"application/json","apikey":SUPABASE_KEY},
+        headers: {"Content-Type":"application/json","apikey":SUPABASE_KEY,"Authorization":`Bearer ${SUPABASE_KEY}`},
         body: JSON.stringify({email, password})
-      });
-      return r.json();
+      }).then(r => r.json()).catch(() => ({error:{message:"Connessione fallita"}}));
     },
-    signUp: async (email, password) => {
-      const r = await fetch(`${SUPABASE_URL}/auth/v1/signup`, {
+    signUp: (email, password) => {
+      return fetch(`${SUPABASE_URL}/auth/v1/signup`, {
         method: "POST",
-        headers: {"Content-Type":"application/json","apikey":SUPABASE_KEY},
+        headers: {"Content-Type":"application/json","apikey":SUPABASE_KEY,"Authorization":`Bearer ${SUPABASE_KEY}`},
         body: JSON.stringify({email, password})
-      });
-      return r.json();
+      }).then(r => r.json()).catch(() => ({error:{message:"Connessione fallita"}}));
     },
-    signOut: async (token) => {
-      await fetch(`${SUPABASE_URL}/auth/v1/logout`, {
+    signOut: (token) => {
+      return fetch(`${SUPABASE_URL}/auth/v1/logout`, {
         method: "POST",
         headers: {"apikey":SUPABASE_KEY,"Authorization":`Bearer ${token}`}
-      });
+      }).catch(()=>{});
     },
   }
 };
@@ -680,6 +678,7 @@ export default function App() {
   const [lEmail,    setLEmail]    = useState("");
   const [lPass,     setLPass]     = useState("");
   const [lErr,      setLErr]      = useState("");
+  const [lLoading,  setLLoading]  = useState(false);
   const [token,     setToken]     = useState(null);
   const [ricordami, setRicordami] = useState(false);
   const [toast,     setToast]     = useState("");
@@ -725,10 +724,9 @@ export default function App() {
     try {
       const saved = localStorage.getItem("fitpro_creds");
       if (saved) {
-        const { email, pass, ruolo: r } = JSON.parse(saved);
+        const { email, pass } = JSON.parse(saved);
         setLEmail(email || "");
         setLPass(pass || "");
-        setLRuolo(r || null);
         setRicordami(true);
       }
     } catch(e) {}
@@ -755,25 +753,29 @@ export default function App() {
     setChatT("");
   };
 
-  const doLogin = async () => {
+  const doLogin = () => {
     if (!lEmail||!lPass) { setLErr("Inserisci email e password"); return; }
-    setLErr("Accesso in corso...");
-    const data = await supabase.auth.signIn(lEmail, lPass);
-    if (data.error || !data.access_token) {
-      setLErr("Email o password non corretti"); return;
-    }
-    setToken(data.access_token);
-    const isCoach = lEmail.toLowerCase() === COACH_EMAIL.toLowerCase();
-    const r = isCoach ? "coach" : "client";
-    setLoggedIn(true); setRuolo(r); setShowLogin(false);
-    setLErr("");
-    if(ricordami) { try { localStorage.setItem("fitpro_creds", JSON.stringify({email:lEmail,pass:lPass,ruolo:r})); } catch(e){} }
-    else { try { localStorage.removeItem("fitpro_creds"); } catch(e){} }
-    vai(isCoach ? "chat" : "portal");
+    setLLoading(true); setLErr("");
+    supabase.auth.signIn(lEmail, lPass)
+      .then(data => {
+        setLLoading(false);
+        if (data.error || !data.access_token) {
+          setLErr(data.error?.message==="Email not confirmed"?"Controlla la tua email e conferma l'account":"Email o password non corretti"); return;
+        }
+        setToken(data.access_token);
+        const isCoach = lEmail.toLowerCase() === COACH_EMAIL.toLowerCase();
+        const r = isCoach ? "coach" : "client";
+        setLoggedIn(true); setRuolo(r); setShowLogin(false);
+        setLErr("");
+        if(ricordami) { try { localStorage.setItem("fitpro_creds", JSON.stringify({email:lEmail,pass:lPass,ruolo:r})); } catch(e){} }
+        else { try { localStorage.removeItem("fitpro_creds"); } catch(e){} }
+        vai(isCoach ? "chat" : "portal");
+      })
+      .catch(() => { setLLoading(false); setLErr("Errore di connessione — riprova"); });
   };
 
-  const doLogout = async () => {
-    if(token) await supabase.auth.signOut(token);
+  const doLogout = () => {
+    if(token) supabase.auth.signOut(token).catch(()=>{});
     setLoggedIn(false); setRuolo(null); setLEmail(""); setLPass(""); setLRuolo(null); setToken(null);
     if(!ricordami) { try { localStorage.removeItem("fitpro_creds"); } catch(e){} }
     vai("home");
@@ -823,7 +825,7 @@ export default function App() {
                 <div style={{width:16,height:16,borderRadius:3,border:"1px solid",borderColor:ricordami?"#e8ff3a":"#333",background:ricordami?"#e8ff3a":"transparent",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,fontSize:10,color:"#000",transition:"all .15s"}}>{ricordami?"✓":""}</div>
                 <span style={{fontSize:12,color:"#555",userSelect:"none"}}>Ricorda le mie credenziali</span>
               </div>
-              <button className="by" onClick={doLogin}>ACCEDI →</button>
+              <button className="by" onClick={doLogin} disabled={lLoading} style={{opacity:lLoading?.6:1}}>{lLoading?"ACCESSO IN CORSO...":"ACCEDI →"}</button>
 
             </div>
           </div>
