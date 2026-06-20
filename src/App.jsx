@@ -731,31 +731,47 @@ export default function App() {
   const doLogin = () => {
     if (!lEmail||!lPass) { setLErr("Inserisci email e password"); return; }
     setLLoading(true); setLErr("");
-    import("https://esm.sh/@supabase/supabase-js@2").then(({ createClient }) => {
-      const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
-      sb.auth.signInWithPassword({ email: lEmail, password: lPass }).then(({ data, error }) => {
-        setLLoading(false);
-        if (error || !data?.session) {
-          setLErr("Email o password non corretti"); return;
-        }
-        setToken(data.session.access_token);
-        const isCoach = lEmail.toLowerCase() === COACH_EMAIL.toLowerCase();
-        const r = isCoach ? "coach" : "client";
-        setLoggedIn(true); setRuolo(r); setShowLogin(false); setLErr("");
-        if(ricordami) { try { localStorage.setItem("fitpro_creds", JSON.stringify({email:lEmail,pass:lPass,ruolo:r})); } catch(e){} }
-        else { try { localStorage.removeItem("fitpro_creds"); } catch(e){} }
-        vai(isCoach ? "chat" : "portal");
-      });
-    }).catch(() => { setLLoading(false); setLErr("Errore di connessione — riprova"); });
+    fetch(SUPABASE_URL + "/auth/v1/token?grant_type=password", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "apikey": SUPABASE_KEY
+      },
+      body: JSON.stringify({ email: lEmail, password: lPass })
+    })
+    .then(r => r.json())
+    .then(data => {
+      setLLoading(false);
+      if (!data.access_token) {
+        setLErr("Email o password non corretti");
+        return;
+      }
+      setToken(data.access_token);
+      const isCoach = lEmail.toLowerCase() === COACH_EMAIL.toLowerCase();
+      const r = isCoach ? "coach" : "client";
+      setLoggedIn(true);
+      setRuolo(r);
+      setShowLogin(false);
+      setLErr("");
+      if (ricordami) { try { localStorage.setItem("fitpro_creds", JSON.stringify({email:lEmail,pass:lPass,ruolo:r})); } catch(e){} }
+      else { try { localStorage.removeItem("fitpro_creds"); } catch(e){} }
+      vai(isCoach ? "chat" : "portal");
+    })
+    .catch(() => {
+      setLLoading(false);
+      setLErr("Errore di connessione — riprova");
+    });
   };
 
   const doLogout = () => {
-    import("https://esm.sh/@supabase/supabase-js@2").then(({ createClient }) => {
-      const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
-      sb.auth.signOut().catch(()=>{});
-    }).catch(()=>{});
+    if (token) {
+      fetch(SUPABASE_URL + "/auth/v1/logout", {
+        method: "POST",
+        headers: { "apikey": SUPABASE_KEY, "Authorization": "Bearer " + token }
+      }).catch(()=>{});
+    }
     setLoggedIn(false); setRuolo(null); setLEmail(""); setLPass(""); setLRuolo(null); setToken(null);
-    if(!ricordami) { try { localStorage.removeItem("fitpro_creds"); } catch(e){} }
+    if (!ricordami) { try { localStorage.removeItem("fitpro_creds"); } catch(e){} }
     vai("home");
   };
 
