@@ -1277,7 +1277,7 @@ export default function App() {
                   <div className="ppr" style={{color:p.featured?"#e8ff3a":"#f0f0f0"}}><sup>€</sup>{annuale?p.prezzoA:p.prezzo}</div>
                   <div className="pper">al mese · {annuale?"fatturato annualmente":"fatturato mensilmente"}</div>
                   {annuale&&<><div className="psave">Risparmi €{(p.prezzo-p.prezzoA)*12}/anno</div><div className="pold">era €{p.prezzo}/mese</div></>}
-                  <button className="pcta" style={{background:p.ctaBg,color:p.ctaCol}} onClick={()=>fire(`✓ Piano ${p.nome} selezionato!`)}>{p.ctaTesto} →</button>
+                  <button className="pcta" style={{background:p.ctaBg,color:p.ctaCol}} onClick={()=>window.open(annuale?p.stripeA:p.stripeM,"_blank")}>{p.ctaTesto} →</button>
                   <div className="fttl">COSA INCLUDE</div>
                   <div className="flst">
                     {p.features.map((f,i)=>(
@@ -1369,7 +1369,7 @@ export default function App() {
                     </div>
                   ) : (
                     <button className="otcta" style={{background:p.featured?"#ff2d2d":"#e8ff3a",color:p.featured?"#fff":"#000",marginTop:"auto"}}
-                      onClick={()=>fire(`✓ ${p.nome} — richiesta inviata! Mattia ti contatterà entro 24h.`)}>
+                      onClick={()=>window.open(p.stripe,"_blank")}>
                       PRENOTA ORA →
                     </button>
                   )}
